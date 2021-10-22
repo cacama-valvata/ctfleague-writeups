@@ -1,0 +1,26 @@
+For this challenge, we demonstrate why a one-time pad (OTP) should not be used more than once! First off we are given a binary of the server side code, as well as a port to curl to connect to the server. We need to open up the binary with Ghidra, and take a look at what kind of encoding and encryption is taking place. By combing through the decompiled C code, we can see that the server takes the plaintext, encodes it with membfrob (which XOR's each byte with decimal 42 or 0x2A), then XOR's each byte with the OTP before encoding it in Base64 and sending it back to the client. 
+
+So at this point we have the equation c = b64( p ⊕ 0x2A ⊕ OTP )
+  where p is the plaintext of our choice that we send to the server, and c is the ciphertext that we receive back.
+  
+We can now try curl'ing the server. It is as expected: we are given the encrypted text of the flag, and then we are asked for a plaintext of our choice. This is encrypted and then sent back to us. These two encryptions are done with the same key and we know the math that is done on the plain text. So we can turn to XOR math:
+
+We know that:
+  A ⊕ 0 = A
+and that conversely:
+  A ⊕ A = 0
+To reverse an XOR operation, we can just XOR the result by the key again. This means we can do some funny business with our original equation. If our c (ignoring the base64 for now) is made with by performing p ⊕ 0x2A ⊕ OTP on the plaintext, then we can isolate the OTP in our output by choosing our plaintext carefully:
+
+  p ⊕ 0x2A ⊕ OTP, and choose a 1024-byte plaintext (because our OTP is 1024 bytes) where each character is 0x2A
+  (0x2A) ⊕ 0x2A ⊕ OTP
+  (0x2A ⊕ 0x2A) ⊕ OTP
+  (0) ⊕ OTP = OTP according to our rules of XOR operations.
+  
+  Alternatively we can fill out plaintext with 0x0's and XOR with 0x2A ourselves. Either way, by doing this, we can receive the OTP key in base64, we would just need to decode. We then use the key to decrypt and decode the flag's ciphertext. This is best accomplished by building a short python script to automatically do all this for us:
+    1. curl the server
+    2. provide our specific plaintext
+    3. take the ciphertext, decode the base64 (and potentially memfrob): we now have the OTP
+    4. decode the flag's ciphertext from base64
+    5. XOR the flag with the OTP
+    
+Voila, we have the flag: osu{d0n7_u5e_4_1_71m3_p4d_m0r3_th4n_0nc3} !
