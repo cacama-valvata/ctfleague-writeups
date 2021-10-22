@@ -16,7 +16,7 @@ To reverse an XOR operation, we can just XOR the result by the key again. This m
   (0x2A ⊕ 0x2A) ⊕ OTP
   (0) ⊕ OTP = OTP according to our rules of XOR operations.
   
-  Alternatively we can fill out plaintext with 0x0's and XOR with 0x2A ourselves. Either way, by doing this, we can receive the OTP key in base64, we would just need to decode. We then use the key to decrypt and decode the flag's ciphertext. This is best accomplished by building a short python script to automatically do all this for us:
+  Alternatively we can fill our plaintext with 0x0's and XOR with 0x2A ourselves. Either way, by doing this, we can receive the OTP key in base64, which we would just need to decode. We then use the key to decrypt and decode the flag's ciphertext. This is best accomplished by building a short python script to automatically do all this for us:
     1. curl the server
     2. provide our specific plaintext
     3. take the ciphertext, decode the base64 (and potentially memfrob): we now have the OTP
