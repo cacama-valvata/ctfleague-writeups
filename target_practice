@@ -1,0 +1,12 @@
+HECK YEAH OSINT
+finally something without math
+
+First, we receive the username @anonhunter26, and a link to the glorious OSINT Framework. We are looking for a username, so we can go Username -> WhatsMyName. We search this username and come up with a few options, the most notable being the Twitter. We go to this guy's Twitter, and we see he has a friend @hatebav2ropc. Let's plug his username into WhatsMyName, and we see he has a Github under the same username. We know that we're on the right track because @hatebav2ropc's only repo is a list of OSINT tools.
+
+Now, we can do some trickery. We COULD look at the Github documentation to extract his email address from the Github API for the Repo. ORRR we could just clone the repo to our machine, and run "git log" to see the email address of the person who did the commit to the repo: anonymousfreak32@gmail.com.
+
+Let's look at the repo that @hatebav2ropc posted again: it must have been posted for a reason. We have a Gmail, so the link going to Ghunt is probably a good bet. Now here is where your coach gives you a much easier way to run this tooling: go to the website tools.epieos.com which hosts the same Ghunt tool but online. We love not downloading packages. However, following the installation instructions and running Ghunt locally will work just fine as well c: So let's plug the anonymousfreak32@gmail.com email into this website. We now see that the full name of this user is Gabriel Cortney. 
+
+Let's remember this is not the full name of the guy we want, it's the name of his friend. Security people are funny and so this guy probably has a more public, official social media for himself. We search the guy's name in Twitter and the first result is what we want. We know this because there are more memes owo. From the guy's bio, we know he works at a company called opticalsocial. Hmmmmmm wonder if the guy we want works at the same company. We google "opticalsocial" with the quotes for an exact match, and the first result is a Github repo for a guy who is a senior software developer. This is interesting because @anonhunter26's Twitter bio mentioned that he was a senior software developer at a startup. Bet this guy is who we want.
+
+And voila, we have the flag: osu{Oswald_Denman}
