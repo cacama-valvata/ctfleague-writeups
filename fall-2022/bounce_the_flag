@@ -1,0 +1,32 @@
+`bounce_the_flag` is an introductory web challenge intended to teach SQL injection.
+
+Taking a look at the source code, the first thing that sticks out is the `login` function in `app.py` containing a detailed SQL command, this will likely be our target. We see that this query references a `users` table, so let's go look at that in the `scores.sql` file.
+
+Lo and behold, there's a user in the database called `Mr. Flag` with a password of `osu{REDACTED}`. Our goal now is to retrieve Mr. Flag's password from the hosted database, through the website we're given.
+
+To even get to the point where we can do SQL injection, we need to get a "high score" on the game, more than 1337 points. This probably takes awhile to achieve legitimately, so let's look for better ways of tricking the game into thinking we have a high enough score. The first thing we should be looking at is the client-side code that sends the request to the server. 
+
+Voila, the score variable is recorded and sent entirely from the client, so we can manipulate this prior to sending our request in the Console tab of Firefox's Developer Tools. Let's set this to be 10,000 for instance, this will allow us to progress. Now for the actual SQL injection. 
+
+This query grabs two columns from the `score` table and `joins` it with the `users` table where the username equals the one we want and the password matches what's in the database. If we want to simply impersonate Mr. Flag, we can input `' or 1=1 --`. This turns the query into accepting Mr. Flag if password equals an empty string OR if 1=1 which is always true. This will allow you to login as Mr. Flag and view scores. However, this isn't really what we're looking for, we want to get Mr. Flag's password.
+
+To do this, we want to utilize the `union` operator in SQL. This will basically glue the results of one query on to the bottom of another query. To do this we pass in `' union select username, password from users where username == ' Mr. Flag' -- `. This query will make it so that nothing is returned from the first query, but results will be returned from the second query, giving us the password associated with Mr. Flag's account, which is also our flag: osu{Py7h0n_F_s7r1n9S_4Re_8E4u71FuL_4ND_4M421N9}
+
+An alternate and faster way of retrieving this data is to send an artificially crafted HTTP request, which you can copy the headers out of in the Developer Tools. You don't need to include the score variable because if it can't retrieve it, it can't check it.
+
+```
+await fetch("http://bounce_the_flag.ctf-league.osusec.org/login", {
+    "credentials": "include",
+    "headers": {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:104.0) Gecko/20100101 Firefox/104.0",
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.5",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Sec-GPC": "1"
+    },
+    "referrer": "http://bounce_the_flag.ctf-league.osusec.org/",
+    "body": "username_input=Mr.+Flag&password_input=%27+UNION+SELECT+username%2C+password+from+users+--+",
+    "method": "POST",
+    "mode": "cors"
+});
+```
